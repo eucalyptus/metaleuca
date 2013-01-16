@@ -1,0 +1,139 @@
+#!/usr/bin/python
+
+#    Licensed to the Apache Software Foundation (ASF) under one
+#    or more contributor license agreements.  See the NOTICE file
+#    distributed with this work for additional information
+#    regarding copyright ownership.  The ASF licenses this file
+#    to you under the Apache License, Version 2.0 (the
+#    "License"); you may not use this file except in compliance
+#    with the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing,
+#    software distributed under the License is distributed on an
+#    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#    KIND, either express or implied.  See the License for the
+#    specific language governing permissions and limitations
+#    under the License.
+#
+#    Contributor: Kyo Lee kyo.lee@eucalyptus.com
+
+import re
+import sys
+import xmlrpclib
+import metaleuca
+from metaleuca import *
+from optparse import OptionParser
+
+def cb(option, opt_str, value, parser):
+        args=[]
+        for arg in parser.rargs:
+                if arg[0] != "-":
+                        args.append(arg)
+                else:
+                        del parser.rargs[:len(args)]
+                        break
+        if getattr(parser.values, option.dest):
+                args.extend(getattr(parser.values, option.dest))
+        setattr(parser.values, option.dest, args)
+
+def main():
+
+	print "METALEUCA RUN INSTANCES"
+
+	parser = OptionParser()
+	parser.add_option("-n", "--instance-count", dest="icount", help="instance count")
+	parser.add_option("-g", "--group", action="callback", callback=cb, dest="group", help="group names")
+	parser.add_option("-i", "--ip", action="callback", callback=cb, dest="ip", help="ip")
+	parser.add_option("-p", "--profile", dest="profile", help="profile name")
+	parser.add_option("-u", "--user", dest="user", help="user name")
+	(options, args) = parser.parse_args()
+
+	metaleuca = Metaleuca();
+	server, token = metaleuca.connect()
+
+	if options.user is None:
+		print "Need Input user; Use --help Option"
+		exit()
+
+	if options.profile is not None:
+		if not metaleuca.validate_profile_by_name(server, options.profile):
+			print "Invalid Input profile: " + options.profile
+			exit()
+	else:
+		options.profile = "DEFAULT"
+
+	is_using_direct_ip = 0
+	ip_str = ""
+	group_str = ""
+
+	if options.ip is None:
+		if options.group is None:
+			print "Need Input group; Use --help Option"
+			exit()
+	
+		if options.icount is None:
+			options.icount = str(1)
+
+		for group in options.group:
+			group_str += group + " "
+		group_str = group_str.rstrip(" ")
+	
+		print "instance count: " +  options.icount + " group: " + group_str + " profile: " + options.profile + " user: " + options.user
+	else:
+		for ip in options.ip:
+			ip_str += ip + " "
+		ip_str = ip_str.rstrip(" ")
+
+		print "ip: " +  ip_str + " profile: " + options.profile + " user: " + options.user
+		is_using_direct_ip = 1
+
+	reserved = ""
+
+	if is_using_direct_ip == 0:
+		reserved = commands.getoutput("./metaleuca-reserve-systems -n " + options.icount + " -g " + group_str + " -u " + options.user)
+	else:
+		reserved = commands.getoutput("./metaleuca-reserve-systems -i " + ip_str + " -u " + options.user)
+
+	p = re.compile(r'RESERVED MACHINE:\s{\s(.*)\s}')
+	ips = p.findall(reserved)
+
+	if len(ips) == 0:
+		print reserved
+		exit()
+
+	ip_list = ips[0].split(" ")
+
+	print
+	process_str = "PREPARE SYSTEMS"
+	print "========================================== " + process_str + " =========================================="
+
+	name_list = []
+	for ip in ip_list:
+		system_info = commands.getoutput("./metaleuca-describe-systems | grep " + ip)
+		system_name = system_info.split(" ")[1]
+		if re.match( r"^\w+-\d+", system_name ):
+			name_list.append(system_name)
+
+	for name in name_list:
+		print 
+		if options.profile is not "DEFAULT":
+			print commands.getoutput("./metaleuca-set-profile -n " + name + " -p " + options.profile)
+			print
+		print commands.getoutput("./metaleuca-enable-netboot -n " + name)
+
+	print
+	process_str = "REBOOT SYSTEMS"
+	print "========================================== " + process_str + " =========================================="
+
+	for name in name_list:
+		print
+		print commands.getoutput("./metaleuca-reboot-system -n " + name)
+
+	print
+
+if __name__ == "__main__":
+    main()
+    exit
+

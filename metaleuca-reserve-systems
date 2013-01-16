@@ -1,0 +1,115 @@
+#!/usr/bin/python
+
+#    Licensed to the Apache Software Foundation (ASF) under one
+#    or more contributor license agreements.  See the NOTICE file
+#    distributed with this work for additional information
+#    regarding copyright ownership.  The ASF licenses this file
+#    to you under the Apache License, Version 2.0 (the
+#    "License"); you may not use this file except in compliance
+#    with the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing,
+#    software distributed under the License is distributed on an
+#    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#    KIND, either express or implied.  See the License for the
+#    specific language governing permissions and limitations
+#    under the License.
+#
+#    Contributor: Kyo Lee kyo.lee@eucalyptus.com
+
+import re
+import sys
+import xmlrpclib
+import commands
+import metaleuca
+from metaleuca import *
+from optparse import OptionParser
+
+def cb(option, opt_str, value, parser):
+        args=[]
+        for arg in parser.rargs:
+                if arg[0] != "-":
+                        args.append(arg)
+                else:
+                        del parser.rargs[:len(args)]
+                        break
+        if getattr(parser.values, option.dest):
+                args.extend(getattr(parser.values, option.dest))
+        setattr(parser.values, option.dest, args)
+
+def main():
+
+	print "METALEUCA RESERVE SYSTEMS"
+
+	parser = OptionParser()
+	parser.add_option("-n", "--instance-count", dest="icount", help="instance count")
+	parser.add_option("-g", "--group", action="callback", callback=cb, dest="group", help="group names")
+	parser.add_option("-i", "--ip", action="callback", callback=cb, dest="ip", help="ip")
+	parser.add_option("-u", "--user", dest="user", help="user name")
+	(options, args) = parser.parse_args()
+
+	### READ metaleuca.ini CONFIG FILE for HOME DIRECTORY
+	config_file = "./var/metaleuca.ini"
+	Config = ConfigParser.ConfigParser()
+	Config.read(config_file)
+	machine_pool_manager_dir = Config.get("MachinePoolManagerInfo", "MACHINE_POOL_MANAGER_DIR")
+
+	### INITIALIZE Metaleuca CLASS
+	metaleuca = Metaleuca();
+	server, token = metaleuca.connect()
+
+	if options.user is None:
+		print "Need Input user; Use --help Option"
+		exit()
+
+	is_using_direct_ip = 0
+	ip_str = ""
+	group_str = ""
+
+	if options.ip is None:
+		if options.group is None:
+			print "Need Input group; Use --help Option"
+			exit()
+
+		if options.icount is None:
+			options.icount = str(1)
+
+		for group in options.group:
+			group_str += group + " "
+		group_str = group_str.rstrip(" ")
+
+		print "instance count: " +  options.icount + " group: " + group_str + " user: " + options.user
+	else:
+		for ip in options.ip:
+			ip_str += ip + " "
+		ip_str = ip_str.rstrip(" ")
+
+		print "ip: " +  ip_str + " user: " + options.user
+		is_using_direct_ip = 1
+
+	selected_ips = ""
+
+	if is_using_direct_ip == 0:
+		available_list = commands.getoutput("./metaleuca-describe-system-groups -g " + group_str + " -f")
+		available_count = commands.getoutput("echo \"" + available_list.rstrip() + "\" | grep FREED | wc -l")
+
+		if int(options.icount) > int(available_count):
+			print "Not enough resources: " + available_count
+			exit()
+
+		lists = available_list.split('\n')
+		for count in range(1, int(options.icount)+1):
+			words = lists[count].split()
+			selected_ips += words[0] + " "
+	else:	
+		selected_ips = ip_str
+
+	print commands.getoutput("cd " + machine_pool_manager_dir + "; perl ./reserve_machine.pl " + options.user + " " + selected_ips)
+
+
+if __name__ == "__main__":
+    main()
+    exit
+

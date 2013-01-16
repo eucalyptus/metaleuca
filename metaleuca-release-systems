@@ -1,0 +1,73 @@
+#!/usr/bin/python
+
+#    Licensed to the Apache Software Foundation (ASF) under one
+#    or more contributor license agreements.  See the NOTICE file
+#    distributed with this work for additional information
+#    regarding copyright ownership.  The ASF licenses this file
+#    to you under the Apache License, Version 2.0 (the
+#    "License"); you may not use this file except in compliance
+#    with the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing,
+#    software distributed under the License is distributed on an
+#    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#    KIND, either express or implied.  See the License for the
+#    specific language governing permissions and limitations
+#    under the License.
+#
+#    Contributor: Kyo Lee kyo.lee@eucalyptus.com
+
+import re
+import sys
+import xmlrpclib
+import metaleuca
+from metaleuca import *
+from optparse import OptionParser
+
+def cb(option, opt_str, value, parser):
+        args=[]
+        for arg in parser.rargs:
+                if arg[0] != "-":
+                        args.append(arg)
+                else:
+                        del parser.rargs[:len(args)]
+                        break
+        if getattr(parser.values, option.dest):
+                args.extend(getattr(parser.values, option.dest))
+        setattr(parser.values, option.dest, args)
+
+def main():
+
+	print "METALEUCA RELEASE SYSTEMS"
+
+	parser = OptionParser()
+	parser.add_option("-u", "--user", dest="user", help="user name")
+	parser.add_option("-i", "--ip", action="callback", callback=cb, dest="ip", help="ip")
+	(options, args) = parser.parse_args()
+
+	### READ metaleuca.ini CONFIG FILE for HOME DIRECTORY
+	config_file = "./var/metaleuca.ini"
+	Config = ConfigParser.ConfigParser()
+	Config.read(config_file)
+	machine_pool_manager_dir = Config.get("MachinePoolManagerInfo", "MACHINE_POOL_MANAGER_DIR")
+
+	if options.user is not None:
+		print commands.getoutput("cd " + machine_pool_manager_dir + "; perl ./free_all_machines_by_owner.pl " + options.user)
+	else:
+		if options.ip is None:
+			print "Need Input ip; Use --help Option"
+			exit()
+
+		release_list = ' '.join(options.ip)
+		print release_list
+
+		print commands.getoutput("cd " + machine_pool_manager_dir + "; perl ./free_machine.pl " + release_list)
+
+	exit()
+
+if __name__ == "__main__":
+    main()
+    exit
+

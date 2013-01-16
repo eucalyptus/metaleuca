@@ -1,0 +1,12 @@
+[CobblerInfo]
+COBBLER_SERVER: <cobbler_hostname>
+USER: <cobbler_username>
+PASSWORD: <cobbler_password>
+OWNER: <cobbler_owner>
+
+[MetaleucaInfo]
+METALEUCA_DIR: <metaleuca_directory>
+
+[MachinePoolManagerInfo]
+MACHINE_POOL_MANAGER_DIR: <machine_pool_manager_directory>
+
