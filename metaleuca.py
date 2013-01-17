@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -tt
 
 # Copyright 2013 Eucalyptus Systems, Inc.
 #
@@ -58,20 +58,20 @@ class Metaleuca:
 
 
 	def connect_to_cobbler(self, server, username, password):
-	    	"""
-	    	Make the connection to the cobbler server that will be used for the
-	    	all operations on the system. This will keep from having to make a 
-	    	connection everytime we perform an operation on the server and should
-	    	keep a (possible) huge connection load on the cobbler server
+		"""
+		Make the connection to the cobbler server that will be used for the
+		all operations on the system. This will keep from having to make a 
+		connection everytime we perform an operation on the server and should
+		keep a (possible) huge connection load on the cobbler server
 
-	    	server -- The IP or FQDN of the cobbler server
-	    	username -- Username with admin rights on the cobbler server
-	    	password -- Password of the corresponding username above
-	    	"""
-	    	remote = xmlrpclib.Server("http://" + server + "/cobbler_api")
-	    	token = remote.login(username, password)
+		server -- The IP or FQDN of the cobbler server
+		username -- Username with admin rights on the cobbler server
+		password -- Password of the corresponding username above
+		"""
+		remote = xmlrpclib.Server("http://" + server + "/cobbler_api")
+		token = remote.login(username, password)
 
-	    	return remote, token
+		return remote, token
 
 
 	def display_distros(self, server):
