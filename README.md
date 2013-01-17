@@ -19,6 +19,10 @@ Using Metaleuca, a user can select an image(profile) and a set of bare-metal mac
 
 Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. 
 
+## Installation Guide ##
+
+https://github.com/eucalyptus/metaleuca/wiki/Metaleuca-Installation-Guide
+
 ## What are the components of Metaleuca? ##
 
 ### Metaleuca Service Layer (Metaleuca SLayer) ###
@@ -65,16 +69,7 @@ metaleuca.py				- main class
 
 ### DIRECTORY ###
 
-var					- holds various text files for now
-
-### ETC ###
-
-metaleuca.pyc
-
-metaleuca.py_backup0
-
-talktocobbler.py
-
+var					- holds the configuration file and the list of machines
 
 
 ## TO DO ##
@@ -93,17 +88,11 @@ Need a way to determine when "pending" should become "failed"
 
 Need to track time and timeout per instance run
 
-Need to be able to use IPs directly rather than using name for most calls
+Need to be able to use IPs directly rather than using name for most calls -- DONE 011313
 
 ## GOOD TO HAVE ##
 
 Use a credentials file, similar to "eucarc" to hold username, prefered group, cobbler ip, username and password
 
-Convert perl scripts into python scripts
-
-Create a separate DB that is configurable
-
-Use NoSQL
-
-Provide Guideline on how to set up Cobbler server
+Convert the perl scripts of machine_pool_manager into python
 
