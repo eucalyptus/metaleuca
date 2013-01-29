@@ -15,50 +15,43 @@ https://github.com/eucalyptus/metaleuca/wiki/Metaleuca-Installation-Guide
 
 ### Metaleuca Service Layer (Metaleuca SLayer) ###
 
-Metaleuca Service Layer, a.k.a Metaleuca Slayer, is a lightweight service layer that manages sequencing of operations that handles launching of bare-metal instances, keeping track of status and resources, and terminating instances; all the information is maintained in Metaleuca's own database that is external to Cobbler's database.
+Metaleuca Service Layer, a.k.a Metaleuca Slayer, is a lightweight service layer that manages sequencing of the bare-metal provision operations and maintaining the statuses -- all the information is maintained in Metaleuca's own database, which is external to Cobbler's database.
 
 ### Metaleuca2ools ###
 
-Metaleuca2ools is a set of CLIs that are exposed to users so that they can directly interact with Metaleuca, similar to EC2 tools and euca2ools.
+Metaleuca2ools is a set of CLIs that are exposed to users so that they can directly interact with Metaleuca, similar to EC2-tools and euca2ools.
 
 ## METALEUCA COMMANDS ##
 
-### INTERNAL COMMANDS ###
+metaleuca-describe-distros  	- Describe all distros in Cobbler
 
-metaleuca-describe-distros  	- describe all distros on Cobbler
+metaleuca-describe-profiles		- Describe all profiles in Cobbler
 
-metaleuca-describe-profiles		- describe all profiles on Cobbler
+metaleuca-describe-systems		- Describe all systems in Cobbler
 
-metaleuca-describe-systems		- describe all systems on Cobbler
+metaleuca-set-profile			- Set the profile of the selected system
 
-metaleuca-set-profile			- set profile of the target system
+metaleuca-reboot-system			- Reboot the selected system
 
-metaleuca-reboot-system			- reboot the target system
+metaleuca-enable-netboot		- Enable the netboot of the selected system
 
-metaleuca-enable-netboot		- enable netboot of the target system
+metaleuca-disable-netboot		- Disable the netboot of the selected system
 
-metaleuca-disable-netboot		- disable netboot of the target system
+metaleuca-describe-system-groups	- Describe the system groups
 
-metaleuca-describe-system-groups	- describe system groups; written in a text file for now
+metaleuca-reserve-systems		- Reserve the selected systems
 
-metaleuca-reserve-systems		- reserve systems under user; need to talk to DB
+metaleuca-release-systems		- Release the selected systems
 
-metaleuca-release-systems		- release systems by IPs; unclear if it is the right way to do; need to talk to DB
+metaleuca-run-instances			- Initate the provision sequence
 
-### COMMANDS EXPOSED TO USERS ###
+metaleuca-describe-instances		- Describe the statuses of the provisioned systems
 
-metaleuca-run-instances			- takes # of instances, group name, profile name, and user name; initate entire provisioning sequence
-
-metaleuca-describe-instances		- need to display matching information as ec2
-
-metaleuca-terminate-instances		- terminate by user name and ip list; need to set the status to "terminated"
-
-metaleuca.py				- main class
+metaleuca-terminate-instances		- Terminated the provisioned systems, returning them back to the resource pool
 
 ### DIRECTORY ###
 
-var					- holds the configuration file and the list of machines
-
+var - Stores the configuration files
 
 ## TO DO ##
 
@@ -78,9 +71,5 @@ Need to track time and timeout per instance run
 
 Need to be able to use IPs directly rather than using name for most calls -- DONE 011313
 
-## GOOD TO HAVE ##
-
 Use a credentials file, similar to "eucarc" to hold username, prefered group, cobbler ip, username and password
-
-Convert the perl scripts of machine_pool_manager into python
 
