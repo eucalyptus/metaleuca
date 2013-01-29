@@ -15,7 +15,7 @@ https://github.com/eucalyptus/metaleuca/wiki/Metaleuca-Installation-Guide
 
 ### Metaleuca Service Layer (Metaleuca SLayer) ###
 
-Metaleuca Service Layer, a.k.a Metaleuca Slayer, is a lightweight service layer that manages sequencing of the bare-metal provision operations and maintaining the statuses -- all the information is maintained in Metaleuca's own database, which is external to Cobbler's database.
+Metaleuca Service Layer, a.k.a Metaleuca Slayer, is a lightweight service layer that manages the sequencing of the bare-metal provision operations and maintains the statuses of those systems -- such information is stored in Metaleuca's own database, which is external to Cobbler.
 
 ### Metaleuca2ools ###
 
