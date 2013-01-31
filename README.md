@@ -1,7 +1,9 @@
 Metaleuca
 =========
 
-Metaleuca is a bare-metal provision management system that interacts with open-source software Cobbler via EC2-like CLIs. Using Metaleuca, a user can trigger Cobbler to initiate a group of bare-metal machines to boot up with new, fresh OS images. In other words, Metaleuca allows users to self-provision bare-metal machines and manage them like EC2, or Eucalyptus, virtual instances via the command-lines that feel much like ec2-tools or euca2ools.
+Metaleuca is a bare-metal provision management system that interacts with open-source software Cobbler via EC2-like CLI.
+
+Using Metaleuca, users can communicate with Cobbler to self-provision a group of bare-metal machines to boot up with new, fresh OS images. The main appeal of Metaleuca is that it allows users to manage the bare-metal machines like EC2's virtual instances via the command-lines that feel much like ec2-tools, or euca2ools.
 
 ## Open Source Licence ##
 
