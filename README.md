@@ -9,6 +9,12 @@ Using Metaleuca, users can communicate with Cobbler to self-provision a group of
 
 Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. 
 
+## Blog ##
+
+### Introducing Metaleuca ###
+
+http://kyolee.com/2013/01/30/introducing-metaleuca/
+
 ## Installation Guide ##
 
 https://github.com/eucalyptus/metaleuca/wiki/Metaleuca-Installation-Guide
