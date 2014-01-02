@@ -47,7 +47,7 @@ class Metaleuca:
 		if( self.target_owner == ""):
 			self.target_owner = "qa"
 		self.metaleuca_dir = Config.get("MetaleucaInfo", "METALEUCA_DIR")
-                if( self.metaleuca_dir == ""):
+		if( self.metaleuca_dir == ""):
                         self.metaleuca_dir = "/home/qa-group/metaleuca"
 		return
 		
